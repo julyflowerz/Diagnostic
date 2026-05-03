@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+  font-weight: 400;
+}
+
+code {
+  font-family: 'Inter', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Sharp red glow effect */
+.glow-effect {
+  animation: red-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes red-glow {
+  from {
+    box-shadow: 0 0 0 1px #dc2626, 0 0 15px rgba(220, 38, 38, 0.5);
+  }
+  to {
+    box-shadow: 0 0 0 1px #dc2626, 0 0 25px rgba(220, 38, 38, 0.8);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc2626;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b91c1c;
+}
+
+/* Sharp button hover effects */
+.btn-sharp {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #dc2626;
+}
+
+.btn-sharp:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px #dc2626, 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-sharp:active {
+  transform: translateY(0);
+  box-shadow: 0 0 0 1px #dc2626, 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* Sharp card borders */
+.card-sharp {
+  border: 1px solid #dc2626;
+  background: #0a0a0a;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-sharp:hover {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #dc2626, 0 4px 12px rgba(220, 38, 38, 0.1);
+}
+
+/* Input fields with red borders */
+.input-sharp {
+  border: 1px solid #dc2626;
+  background: #000000;
+  color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-sharp:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #dc2626, 0 0 0 3px rgba(220, 38, 38, 0.1);
+  outline: none;
+}
+
+.input-sharp::placeholder {
+  color: #737373;
+}
