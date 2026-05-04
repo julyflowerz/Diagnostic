@@ -27,7 +27,7 @@ class ApiService {
           messages: [
             {
               role: 'system',
-              content: 'You are an expert automotive diagnostic technician with 20+ years of experience. Provide detailed, accurate diagnostic information for car problems. Always prioritize safety and provide practical advice.'
+              content: 'You are an expert automotive diagnostic technician with 20+ years of experience. Return beginner-friendly, safety-first, structured JSON only.'
             },
             {
               role: 'user',
@@ -68,22 +68,31 @@ Reported Problem:
 - System: ${problem.system}
 
 Please provide:
-1. A detailed diagnosis of the likely cause
-2. List of potentially affected components
-3. Recommended diagnostic steps
-4. Repair recommendations
-5. Estimated cost range (parts + labor)
-6. Severity assessment (low/medium/high)
-7. Safety considerations
+1. A concise diagnosis summary
+2. Possible causes
+3. List of potentially affected components
+4. Recommended diagnostic checks
+5. Repair recommendations
+6. Estimated cost range (parts + labor)
+7. Severity assessment (low/medium/high)
+8. Estimated difficulty (easy/moderate/hard/professional)
+9. Safety warnings
+10. Whether the user should keep driving or stop driving
+11. Related OBD-II codes
 
 Format your response as a structured JSON object with the following keys:
 {
   "diagnosis": "detailed explanation",
+  "possibleCauses": ["cause1", "cause2", ...],
   "affectedParts": ["part1", "part2", ...],
-  "recommendations": ["step1", "step2", ...],
+  "recommendedChecks": ["check1", "check2", ...],
+  "recommendations": ["repair1", "repair2", ...],
   "estimatedCost": "$min-$max",
   "severity": "low|medium|high",
-  "safetyNotes": "important safety information"
+  "estimatedDifficulty": "easy|moderate|hard|professional",
+  "safetyWarnings": ["warning1", "warning2", ...],
+  "driveAdvice": "safe to drive briefly|drive cautiously|stop driving",
+  "relatedObdCodes": ["P0137", "P0300", ...]
 }
 `;
   }
@@ -97,14 +106,28 @@ Format your response as a structured JSON object with the following keys:
         return {
           problem: originalProblem,
           diagnosis: parsed.diagnosis || response,
+          possibleCauses: parsed.possibleCauses || [
+            'Component wear or failure',
+            'Sensor, fluid, or electrical issue'
+          ],
           affectedParts: parsed.affectedParts || originalProblem.affectedParts,
+          recommendedChecks: parsed.recommendedChecks || [
+            'Inspect related components',
+            'Check dashboard warning lights and scan for OBD-II codes'
+          ],
           recommendations: parsed.recommendations || [
             'Consult with a professional mechanic for accurate diagnosis',
             'Follow safety procedures when working on vehicles'
           ],
           estimatedCost: parsed.estimatedCost || originalProblem.estimatedCost,
           severity: parsed.severity || originalProblem.severity,
-          safetyNotes: parsed.safetyNotes || 'Always prioritize safety when working on vehicles'
+          estimatedDifficulty: parsed.estimatedDifficulty || 'moderate',
+          safetyWarnings: parsed.safetyWarnings || [
+            parsed.safetyNotes || 'Always prioritize safety when working on vehicles'
+          ],
+          safetyNotes: parsed.safetyNotes || 'Always prioritize safety when working on vehicles',
+          driveAdvice: parsed.driveAdvice || 'drive cautiously',
+          relatedObdCodes: parsed.relatedObdCodes || []
         };
       }
     } catch (error) {
@@ -115,14 +138,26 @@ Format your response as a structured JSON object with the following keys:
     return {
       problem: originalProblem,
       diagnosis: response,
+      possibleCauses: [
+        'Component wear or failure',
+        'Sensor, fluid, or electrical issue'
+      ],
       affectedParts: originalProblem.affectedParts,
+      recommendedChecks: [
+        'Inspect related components',
+        'Check dashboard warning lights and scan for OBD-II codes'
+      ],
       recommendations: [
         'Consult with a professional mechanic for accurate diagnosis',
         'Follow safety procedures when working on vehicles'
       ],
       estimatedCost: originalProblem.estimatedCost,
       severity: originalProblem.severity,
-      safetyNotes: 'Always prioritize safety when working on vehicles'
+      estimatedDifficulty: 'moderate',
+      safetyWarnings: ['Always prioritize safety when working on vehicles'],
+      safetyNotes: 'Always prioritize safety when working on vehicles',
+      driveAdvice: 'drive cautiously',
+      relatedObdCodes: []
     };
   }
 
@@ -131,7 +166,17 @@ Format your response as a structured JSON object with the following keys:
     const mockResults = {
       problem: problem,
       diagnosis: `Based on the symptoms of ${problem.name} in your vehicle, this issue appears to be related to the ${problem.system}. Common causes include wear and tear, fluid issues, or component failure. A thorough inspection is recommended to identify the exact cause.`,
+      possibleCauses: [
+        'Normal component wear',
+        'Low or contaminated fluid',
+        'Faulty sensor or electrical connection'
+      ],
       affectedParts: problem.affectedParts,
+      recommendedChecks: [
+        'Inspect related components for visible damage',
+        'Check fluid levels and condition if applicable',
+        'Use an OBD-II scanner if a warning light is active'
+      ],
       recommendations: [
         'Perform visual inspection of related components',
         'Check fluid levels and condition if applicable',
@@ -141,7 +186,14 @@ Format your response as a structured JSON object with the following keys:
       ],
       estimatedCost: problem.estimatedCost,
       severity: problem.severity,
-      safetyNotes: 'Always disconnect battery before working on electrical components. Use proper safety equipment and follow manufacturer guidelines.'
+      estimatedDifficulty: problem.severity === 'high' ? 'professional' : 'moderate',
+      safetyWarnings: [
+        'Use proper safety equipment',
+        'Do not drive if braking, steering, overheating, or exhaust fumes are unsafe'
+      ],
+      safetyNotes: 'Always disconnect battery before working on electrical components. Use proper safety equipment and follow manufacturer guidelines.',
+      driveAdvice: problem.severity === 'high' ? 'stop driving' : 'drive cautiously',
+      relatedObdCodes: problem.system?.toLowerCase().includes('exhaust') ? ['P0137', 'P0420'] : ['P0300', 'P0171']
     };
 
     return mockResults;

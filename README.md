@@ -1,128 +1,126 @@
-# Car Diagnostic Tool
+# AI Car Diagnostic Tool
 
-A comprehensive 3D car diagnostic application that helps car enthusiasts identify and understand automotive problems with visual guidance.
+A beginner-friendly React application that helps users diagnose car problems with a guided workflow, a 3D vehicle panel, local diagnostic history, simulated queue processing, and OpenRouter LLM integration.
 
 ## Features
 
-- **3D Car Visualization**: Interactive 3D model with problem highlighting
-- **Comprehensive Problem Database**: Covers engine, electrical, brakes, maintenance, exhaust, and transmission issues
-- **Smart Diagnostics**: AI-powered analysis using OpenRouter API
-- **Cost Estimates**: Provides estimated repair costs
-- **Severity Assessment**: Categorizes issues by urgency
-- **DIY-Friendly**: Designed to empower car enthusiasts to work on their own vehicles
+- Dark mode interface with red automotive accents.
+- Step-by-step workflow for vehicle entry, symptom selection, AI diagnosis, results, and history.
+- Clickable 3D vehicle systems for Engine, Exhaust/O2 Sensor, Battery, Wheels/Suspension, and Cooling System.
+- OpenRouter-powered AI diagnostic analysis.
+- Structured result cards for severity, cost, drive advice, causes, checks, repairs, warnings, difficulty, and OBD-II codes.
+- Browser localStorage database layer for saved diagnostic reports.
+- Simulated event-driven diagnostic queue.
+- Testing with Jest and React Testing Library.
+- GitHub Actions CI workflow for test and build checks.
+- Environment labels for development, staging, and production.
 
-## Technology Stack
+## Screenshots
 
-- **Frontend**: React 18
-- **3D Graphics**: Three.js with React Three Fiber
-- **Styling**: TailwindCSS
-- **Icons**: Lucide React
-- **AI Integration**: OpenRouter API (Claude 3 Haiku)
+Add screenshots here for your class presentation:
 
-## Getting Started
+- Home workflow screen
+- Vehicle system panel
+- AI diagnosis results
+- Diagnostic history
 
-### Prerequisites
+## Install
 
-- Node.js (v14 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd car-diagnostic-app
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Start the development server:
+## Environment setup
+
+Copy `.env.example` to `.env.local` and add your key:
+
+```env
+REACT_APP_OPENROUTER_API_KEY=your_openrouter_api_key_here
+REACT_APP_ENV=development
+```
+
+Do not commit `.env` or `.env.local`.
+
+## Run locally
+
 ```bash
 npm start
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open `http://localhost:3000`.
 
-## Usage
+## Test
 
-1. **Enter Vehicle Information**: Select the year, make, and model of your car
-2. **Select Problem**: Choose from categorized problem types or describe your issue
-3. **Run Diagnostic**: Click "Run Diagnostic" to analyze the problem
-4. **View Results**: See the 3D model highlight affected areas and review detailed recommendations
-
-## API Integration
-
-The application integrates with OpenRouter API for advanced diagnostics. The API key is pre-configured, but you can update it in `src/services/apiService.js`:
-
-```javascript
-const OPENROUTER_API_KEY = 'your-api-key-here';
+```bash
+npm test -- --watchAll=false
 ```
 
-## Project Structure
+See `TESTING.md` for the testing protocol.
 
-```
-src/
-├── components/
-│   ├── CarViewer.js          # 3D car model component
-│   ├── DiagnosticForm.js     # Vehicle information form
-│   ├── ProblemSelector.js    # Problem selection interface
-│   └── DiagnosticResults.js  # Results display component
-├── services/
-│   └── apiService.js         # OpenRouter API integration
-├── App.js                    # Main application component
-├── App.css                   # Application styles
-└── index.js                  # Application entry point
+## Build
+
+```bash
+npm run build
 ```
 
-## Features in Detail
+## System design overview
 
-### 3D Visualization
-- Interactive car model using Three.js
-- Component highlighting for problem areas
-- Orbit controls for viewing from different angles
-- Real-time updates based on selected problems
+The application is organized into React UI components and service modules:
 
-### Problem Categories
-- **Engine Issues**: Stuttering, won't start, overheating, check engine light
-- **Electrical System**: Battery, alternator, starter problems
-- **Brake System**: Noise, soft pedals, vibrations
-- **Routine Maintenance**: Oil changes, tire service, fluid checks
-- **Exhaust System**: Noise, fumes, leaks
-- **Transmission**: Slipping, hard shifting
+- `App.js`: coordinates the workflow, validation, queue status, results, and history.
+- `CarViewer.js`: displays the 3D vehicle panel and selectable system labels.
+- `DiagnosticForm.js`: captures year, make, and model.
+- `ProblemSelector.js`: lets users choose symptoms.
+- `DiagnosticResults.js`: displays structured AI output.
+- `apiService.js`: calls OpenRouter using `process.env.REACT_APP_OPENROUTER_API_KEY`.
+- `diagnosticQueue.js`: simulates asynchronous queue processing.
+- `diagnosticStorage.js`: stores diagnostic history in localStorage.
 
-### Diagnostic Results
-- Detailed problem analysis
-- Affected component identification
-- Cost estimates
-- Severity assessment
-- Step-by-step recommendations
-- Safety warnings
+## Database / localStorage explanation
 
-## Contributing
+This frontend-only version uses browser localStorage as a simple local database. It stores vehicle details, selected symptoms, AI diagnosis results, timestamps, and status values.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+The storage service exposes:
 
-## License
+- `saveDiagnosticResult(result)`
+- `getDiagnosticHistory()`
+- `deleteDiagnosticResult(id)`
+- `clearDiagnosticHistory()`
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+In a future version, this service could be replaced by Firebase, SQL Server, MongoDB, or PostgreSQL through a backend API.
 
-## Safety Notice
+## Queue / event-driven explanation
 
-This tool is designed to provide guidance and educational information. Always prioritize safety when working on vehicles. If you're unsure about any repair procedure, consult a professional mechanic. Some repairs require specialized tools and knowledge.
+`diagnosticQueue.js` simulates a queue-driven architecture:
 
-## Future Enhancements
+1. The UI creates a diagnostic job.
+2. The job starts as `queued`.
+3. The worker changes it to `processing`.
+4. OpenRouter AI is called asynchronously.
+5. The job becomes `completed` or `failed`.
 
-- [ ] OBD-II code integration
-- [ ] More detailed 3D models for specific car types
-- [ ] Video tutorials for common repairs
-- [ ] Parts ordering integration
-- [ ] Mechanic finder service
-- [ ] Maintenance schedule tracking
-- [ ] Multi-language support
+In production, this could map to RabbitMQ, Kafka, AWS SQS, Azure Queue Storage, or a database-backed worker queue.
+
+## CI/CD explanation
+
+The GitHub Actions workflow in `.github/workflows/ci.yml` runs tests and builds the app on pushes and pull requests to `main`.
+
+See `CICD.md` for details.
+
+## Security notes
+
+- API keys belong in `.env.local`, not source code.
+- `.env` and `.env.local` are ignored by Git.
+- Exposed keys should be rotated.
+- Frontend environment variables are visible in production browser bundles, so a backend proxy is recommended for real deployments.
+
+See `SECURITY.md` for details.
+
+## Future improvements
+
+- Add user accounts and cloud-synced diagnostic history.
+- Replace localStorage with a real backend database.
+- Move OpenRouter calls behind a secure backend proxy.
+- Add staging and production deployment pipelines.
+- Add downloadable PDF diagnostic reports.
+- Add more OBD-II code lookup features.
