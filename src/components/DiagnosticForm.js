@@ -67,32 +67,14 @@ function DiagnosticForm({ carInfo, setCarInfo }) {
         />
       </div>
 
-      <div>
-        <label htmlFor="vehicle-vin" className="block text-sm font-medium text-diagnostic-text mb-2">
-          VIN for real repair pricing
-        </label>
-        <input
-          id="vehicle-vin"
-          type="text"
-          value={carInfo.vin || ''}
-          onChange={(e) => handleInputChange('vin', e.target.value)}
-          placeholder="Optional 17-character VIN"
-          maxLength={17}
-          className="w-full px-4 py-2 input-sharp rounded-lg uppercase"
-        />
-        <p className="mt-2 text-xs text-diagnostic-muted">
-          Optional: Vehicle Databases repair pricing requires a VIN and API key.
-        </p>
-      </div>
-
+      
       {(carInfo.year || carInfo.make || carInfo.model) && (
         <div className="p-3 bg-diagnostic-surface border border-diagnostic-border rounded-lg">
           <p className="text-sm text-diagnostic-red font-medium">
             {carInfo.year && `${carInfo.year} `}
             {carInfo.make && `${carInfo.make} `}
             {carInfo.model && carInfo.model}
-            {carInfo.vin && ` • VIN ${carInfo.vin.toUpperCase()}`}
-          </p>
+                      </p>
         </div>
       )}
     </div>

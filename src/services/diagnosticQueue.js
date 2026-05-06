@@ -1,5 +1,6 @@
 import apiService from './apiService';
 import { enrichDiagnosisWithRepairPricing } from './repairPricingService';
+import commonProblemsService from './commonProblemsService';
 
 const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
@@ -20,8 +21,19 @@ export const processDiagnosticJob = async (job, onStatusChange = () => {}) => {
   onStatusChange(processingJob);
 
   try {
-    const aiDiagnosis = await apiService.diagnoseCarProblem(job.vehicle, job.problem);
+    // Get common problems for this vehicle
+    const commonProblems = await commonProblemsService.getCommonProblems(
+      job.vehicle.make, 
+      job.vehicle.model, 
+      job.vehicle.year
+    );
+    
+    const aiDiagnosis = await apiService.diagnoseCarProblem(job.vehicle, job.problem, commonProblems);
     const diagnosis = await enrichDiagnosisWithRepairPricing(job.vehicle, job.problem, aiDiagnosis);
+    
+    // Add common problems data to the diagnosis
+    diagnosis.commonProblems = commonProblems;
+    
     const completedJob = {
       ...processingJob,
       diagnosis,

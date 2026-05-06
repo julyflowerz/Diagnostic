@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, CheckCircle, DollarSign, Gauge, ListChecks, Route, ShieldAlert, Wrench } from 'lucide-react';
+import { AlertTriangle, CheckCircle, DollarSign, Gauge, ListChecks, Route, ShieldAlert, Wrench, TrendingUp } from 'lucide-react';
 
 const formatPart = (part) => part?.replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
@@ -22,6 +22,25 @@ function DiagnosticResults({ results }) {
         <p className="leading-relaxed text-diagnostic-text">{results.diagnosis}</p>
       </ResultCard>
 
+      {results.commonProblems && results.commonProblems.length > 0 && (
+        <ResultCard icon={TrendingUp} title="Common Problems for This Vehicle">
+          <div className="space-y-3">
+            {results.commonProblems.map((problem, index) => (
+              <div key={index} className="flex items-center justify-between rounded-lg border border-neutral-800 bg-diagnostic-bg p-3">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-diagnostic-red">{problem.problem}</h4>
+                  <p className="text-sm text-diagnostic-muted">{problem.symptoms.join(', ')}</p>
+                </div>
+                <div className="ml-4 text-right">
+                  <div className="text-lg font-bold text-diagnostic-red">{problem.likelihood}%</div>
+                  <div className="text-xs text-diagnostic-muted">likelihood</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ResultCard>
+      )}
+
       {results.repairPricing && (
         <ResultCard icon={DollarSign} title="Real Mechanic Average Pricing">
           <div className="space-y-2">
@@ -39,7 +58,7 @@ function DiagnosticResults({ results }) {
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <ResultList icon={AlertTriangle} title="Possible Causes" items={results.possibleCauses} />
+        <ResultList icon={AlertTriangle} title="Possible Causes" items={results.possibleCauses} showLikelihood={true} />
         <ResultList icon={ListChecks} title="Recommended Checks" items={results.recommendedChecks} />
         <ResultList icon={CheckCircle} title="Repair Recommendations" items={results.recommendations} />
         <ResultList icon={ShieldAlert} title="Safety Warnings" items={results.safetyWarnings} warning />
@@ -97,16 +116,35 @@ function PriceBox({ label, value }) {
   );
 }
 
-function ResultList({ icon: Icon, title, items = [], warning = false }) {
+function ResultList({ icon: Icon, title, items = [], warning = false, showLikelihood = false }) {
   return (
     <ResultCard icon={Icon} title={title}>
       <ul className="space-y-2">
-        {items.map((item, index) => (
-          <li key={`${item}-${index}`} className="flex gap-2 text-sm text-diagnostic-text">
-            {warning ? <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-400" /> : <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-400" />}
-            <span>{item}</span>
-          </li>
-        ))}
+        {items.map((item, index) => {
+          // Parse likelihood if present
+          let text = item;
+          let likelihood = null;
+          
+          if (showLikelihood && typeof item === 'string') {
+            const match = item.match(/^(.+?)\s*-\s*(\d+)%\s*likelihood$/i);
+            if (match) {
+              text = match[1];
+              likelihood = match[2];
+            }
+          }
+          
+          return (
+            <li key={`${item}-${index}`} className="flex gap-2 text-sm text-diagnostic-text">
+              {warning ? <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-400" /> : <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-400" />}
+              <span className="flex-1">{text}</span>
+              {likelihood && (
+                <span className="flex-shrink-0 rounded-full border border-diagnostic-red bg-red-950/20 px-2 py-1 text-xs font-semibold text-diagnostic-red">
+                  {likelihood}%
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </ResultCard>
   );

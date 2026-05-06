@@ -10,9 +10,9 @@ class ApiService {
     this.baseUrl = OPENROUTER_API_URL;
   }
 
-  async diagnoseCarProblem(carInfo, problem) {
+  async diagnoseCarProblem(carInfo, problem, commonProblems = []) {
     try {
-      const prompt = this.buildDiagnosticPrompt(carInfo, problem);
+      const prompt = this.buildDiagnosticPrompt(carInfo, problem, commonProblems);
       
       const response = await fetch(this.baseUrl, {
         method: 'POST',
@@ -53,7 +53,7 @@ class ApiService {
     }
   }
 
-  buildDiagnosticPrompt(carInfo, problem) {
+  buildDiagnosticPrompt(carInfo, problem, commonProblems = []) {
     return `
 Please provide a detailed diagnostic analysis for the following car issue:
 
@@ -67,9 +67,12 @@ Reported Problem:
 - Description: ${problem.description}
 - System: ${problem.system}
 
+Common Problems for this Vehicle:
+${commonProblems.length > 0 ? commonProblems.map(p => `- ${p.problem} (${p.likelihood}% likelihood): ${p.symptoms.join(', ')}`).join('\n') : 'No specific common problems data available for this vehicle.'}
+
 Please provide:
 1. A concise diagnosis summary
-2. Possible causes
+2. Possible causes with likelihood percentages (e.g., "Battery failure - 75% likelihood")
 3. List of potentially affected components
 4. Recommended diagnostic checks
 5. Repair recommendations
