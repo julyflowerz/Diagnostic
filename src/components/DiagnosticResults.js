@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, CheckCircle, DollarSign, Gauge, ListChecks, Route, ShieldAlert, Wrench, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle, DollarSign, Gauge, ListChecks, Route, ShieldAlert, Wrench, TrendingUp, Brain, Target } from 'lucide-react';
 
 const formatPart = (part) => part?.replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
@@ -10,16 +10,68 @@ function DiagnosticResults({ results }) {
     low: 'border-green-500 bg-green-950/30 text-green-200'
   }[results.severity] || 'border-neutral-700 bg-diagnostic-surface text-diagnostic-text';
 
+  const confidenceClass = {
+    high: 'border-green-500 bg-green-950/30 text-green-200',
+    medium: 'border-yellow-500 bg-yellow-950/30 text-yellow-200',
+    low: 'border-orange-500 bg-orange-950/30 text-orange-200',
+    very_low: 'border-red-500 bg-red-950/30 text-red-200'
+  }[results.confidenceLevel] || 'border-neutral-700 bg-diagnostic-surface text-diagnostic-text';
+
+  const getConfidenceColor = (confidence) => {
+    if (confidence >= 80) return 'text-green-400';
+    if (confidence >= 60) return 'text-yellow-400';
+    if (confidence >= 40) return 'text-orange-400';
+    return 'text-red-400';
+  };
+
   return (
     <div className="space-y-5">
+      {/* Confidence and Primary Diagnosis */}
+      {results.primaryDiagnosis && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <MetricCard 
+            icon={Brain} 
+            title="Confidence" 
+            value={`${results.confidence || 0}%`} 
+            className={confidenceClass}
+          />
+          <MetricCard 
+            icon={Target} 
+            title="Primary Diagnosis" 
+            value={results.primaryDiagnosis.name || 'Unknown'} 
+            className="border-diagnostic-red bg-red-950/20 text-diagnostic-red"
+          />
+        </div>
+      )}
+
+      {/* Traditional Metrics */}
       <div className="grid gap-4 lg:grid-cols-3">
         <MetricCard icon={Gauge} title="Severity" value={results.severity || 'unknown'} className={severityClass} />
         <MetricCard icon={DollarSign} title="Estimated Cost" value={results.estimatedCost || 'Varies'} />
         <MetricCard icon={Route} title="Drive Advice" value={results.driveAdvice || 'drive cautiously'} />
       </div>
 
+      {/* Diagnosis Summary with Confidence */}
       <ResultCard icon={Wrench} title="Diagnosis Summary">
-        <p className="leading-relaxed text-diagnostic-text">{results.diagnosis}</p>
+        <div className="space-y-3">
+          <p className="leading-relaxed text-diagnostic-text">{results.summary || results.diagnosis}</p>
+          {results.confidence && (
+            <div className="flex items-center justify-between rounded-lg border border-neutral-800 bg-diagnostic-bg p-3">
+              <span className="text-sm font-medium text-diagnostic-text">Diagnostic Confidence</span>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-24 rounded-full bg-neutral-800">
+                  <div 
+                    className="h-2 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
+                    style={{ width: `${results.confidence}%` }}
+                  />
+                </div>
+                <span className={`font-bold ${getConfidenceColor(results.confidence)}`}>
+                  {results.confidence}%
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       </ResultCard>
 
       {results.commonProblems && results.commonProblems.length > 0 && (
@@ -57,33 +109,58 @@ function DiagnosticResults({ results }) {
         </ResultCard>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <ResultList icon={AlertTriangle} title="Possible Causes" items={results.possibleCauses} showLikelihood={true} />
-        <ResultList icon={ListChecks} title="Recommended Checks" items={results.recommendedChecks} />
-        <ResultList icon={CheckCircle} title="Repair Recommendations" items={results.recommendations} />
-        <ResultList icon={ShieldAlert} title="Safety Warnings" items={results.safetyWarnings} warning />
-      </div>
-
-      <ResultCard icon={Wrench} title="Affected Components">
-        <div className="flex flex-wrap gap-2">
-          {(results.affectedParts || []).map(part => (
-            <span key={part} className="rounded-full border border-diagnostic-red bg-diagnostic-bg px-3 py-1 text-sm text-diagnostic-red">{formatPart(part)}</span>
-          ))}
-        </div>
-      </ResultCard>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <ResultCard icon={Gauge} title="Estimated Difficulty">
-          <p className="text-lg font-bold capitalize text-diagnostic-red">{results.estimatedDifficulty || 'moderate'}</p>
-        </ResultCard>
-        <ResultCard icon={ListChecks} title="Related OBD-II Codes">
-          <div className="flex flex-wrap gap-2">
-            {(results.relatedObdCodes?.length ? results.relatedObdCodes : ['No specific code returned']).map(code => (
-              <span key={code} className="rounded-lg border border-neutral-700 px-3 py-2 text-sm text-diagnostic-muted">{code}</span>
+      {/* Possible Causes with Confidence Scores */}
+      {results.possibleCauses && results.possibleCauses.length > 0 && (
+        <ResultCard icon={AlertTriangle} title="Possible Causes (Ranked by Confidence)">
+          <div className="space-y-3">
+            {results.possibleCauses.map((cause, index) => (
+              <div key={index} className="flex items-center justify-between rounded-lg border border-neutral-800 bg-diagnostic-bg p-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-diagnostic-red">{cause.name}</span>
+                    <span className={`text-xs px-2 py-1 rounded-full border ${
+                      cause.confidence >= 80 ? 'border-green-500 bg-green-950/30 text-green-300' :
+                      cause.confidence >= 60 ? 'border-yellow-500 bg-yellow-950/30 text-yellow-300' :
+                      cause.confidence >= 40 ? 'border-orange-500 bg-orange-950/30 text-orange-300' :
+                      'border-red-500 bg-red-950/30 text-red-300'
+                    }`}>
+                      {cause.confidence}% confidence
+                    </span>
+                  </div>
+                  <p className="text-sm text-diagnostic-muted mt-1">{cause.reasoning}</p>
+                  {cause.symptoms && cause.symptoms.length > 0 && (
+                    <p className="text-xs text-diagnostic-muted mt-1">
+                      Symptoms: {cause.symptoms.join(', ')}
+                    </p>
+                  )}
+                </div>
+                <div className="ml-4 text-right">
+                  <div className={`text-lg font-bold ${getConfidenceColor(cause.confidence)}`}>
+                    #{index + 1}
+                  </div>
+                  <div className="text-xs text-diagnostic-muted">rank</div>
+                </div>
+              </div>
             ))}
           </div>
         </ResultCard>
+      )}
+
+      {/* Recommendations and Next Steps */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ResultList icon={ListChecks} title="Recommended Checks" items={results.recommendations || results.recommendedChecks} />
+        <ResultList icon={CheckCircle} title="Repair Recommendations" items={results.recommendations} />
       </div>
+
+      {/* Safety Concerns */}
+      {results.safetyConcerns && results.safetyConcerns.length > 0 && (
+        <ResultList icon={ShieldAlert} title="Safety Concerns" items={results.safetyConcerns} warning />
+      )}
+
+      {/* Next Steps */}
+      {results.nextSteps && results.nextSteps.length > 0 && (
+        <ResultList icon={Target} title="Next Steps" items={results.nextSteps} />
+      )}
     </div>
   );
 }

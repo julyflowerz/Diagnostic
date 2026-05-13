@@ -29,51 +29,90 @@ function AccordBody({ highlightedPart, hoodOpen }) {
 
   return (
     <group>
-      <RoundedBox args={[5.8, 0.75, 1.9]} radius={0.16} smoothness={6} position={[0, 0.35, 0]}>
+      {/* Main body - 2021 Honda Accord inspired design */}
+      <RoundedBox args={[6.2, 0.75, 1.9]} radius={0.18} smoothness={8} position={[0, 0.35, 0]}>
         <Material color={paintColor} />
       </RoundedBox>
-      <RoundedBox args={[1.65, 0.18, 1.78]} radius={0.08} smoothness={5} position={hoodPosition} rotation={hoodRotation}>
+      
+      {/* Hood with more aggressive styling */}
+      <RoundedBox args={[1.85, 0.18, 1.78]} radius={0.06} smoothness={6} position={hoodPosition} rotation={hoodRotation}>
         <Material color={paintColor} highlighted={hoodHighlighted} />
       </RoundedBox>
-      <RoundedBox args={[1.25, 0.18, 1.72]} radius={0.08} smoothness={5} position={[-2.05, 0.78, 0]} rotation={[0, 0, 0.04]}>
+      
+      {/* Trunk */}
+      <RoundedBox args={[1.35, 0.18, 1.72]} radius={0.06} smoothness={6} position={[-2.15, 0.78, 0]} rotation={[0, 0, 0.04]}>
         <Material color={paintColor} />
       </RoundedBox>
-      <RoundedBox args={[2.35, 0.82, 1.62]} radius={0.16} smoothness={6} position={[-0.35, 1.13, 0]}>
+      
+      {/* Roof - more sleek profile */}
+      <RoundedBox args={[2.45, 0.82, 1.62]} radius={0.14} smoothness={8} position={[-0.35, 1.13, 0]}>
         <Material color={paintColor} />
       </RoundedBox>
-      <RoundedBox args={[0.88, 0.48, 1.5]} radius={0.08} smoothness={4} position={[0.64, 1.2, 0]} rotation={[0, 0, -0.18]}>
+      
+      {/* Front windshield - more raked */}
+      <RoundedBox args={[0.92, 0.48, 1.5]} radius={0.06} smoothness={4} position={[0.68, 1.2, 0]} rotation={[0, 0, -0.22]}>
         <Material color={glassColor} transparent opacity={0.72} metalness={0} roughness={0.15} />
       </RoundedBox>
-      <RoundedBox args={[0.9, 0.46, 1.5]} radius={0.08} smoothness={4} position={[-1.18, 1.2, 0]} rotation={[0, 0, 0.18]}>
+      
+      {/* Rear windshield */}
+      <RoundedBox args={[0.94, 0.46, 1.5]} radius={0.06} smoothness={4} position={[-1.22, 1.2, 0]} rotation={[0, 0, 0.22]}>
         <Material color={glassColor} transparent opacity={0.72} metalness={0} roughness={0.15} />
       </RoundedBox>
+      
+      {/* Center pillar */}
       <Box args={[0.08, 0.5, 1.58]} position={[-0.28, 1.2, 0]}>
         <Material color={trimColor} />
       </Box>
-      <RoundedBox args={[0.18, 0.38, 1.72]} radius={0.04} smoothness={4} position={[2.98, 0.43, 0]}>
-        <Material color={trimColor} />
+      
+      {/* Front grille - 2021 Accord style */}
+      <RoundedBox args={[0.22, 0.35, 1.72]} radius={0.03} smoothness={4} position={[3.08, 0.43, 0]}>
+        <Material color={trimColor} metalness={0.8} roughness={0.2} />
       </RoundedBox>
-      <RoundedBox args={[0.16, 0.22, 0.52]} radius={0.04} smoothness={4} position={[3.08, 0.58, 0.52]}>
+      
+      {/* Headlights - LED style */}
+      <RoundedBox args={[0.18, 0.24, 0.52]} radius={0.03} smoothness={4} position={[3.18, 0.58, 0.52]}>
         <Material color="#fef3c7" />
       </RoundedBox>
-      <RoundedBox args={[0.16, 0.22, 0.52]} radius={0.04} smoothness={4} position={[3.08, 0.58, -0.52]}>
+      <RoundedBox args={[0.18, 0.24, 0.52]} radius={0.03} smoothness={4} position={[3.18, 0.58, -0.52]}>
         <Material color="#fef3c7" />
       </RoundedBox>
-      <RoundedBox args={[0.18, 0.36, 1.72]} radius={0.05} smoothness={4} position={[-3.0, 0.4, 0]}>
+      
+      {/* Rear bumper */}
+      <RoundedBox args={[0.20, 0.36, 1.72]} radius={0.04} smoothness={4} position={[-3.1, 0.4, 0]}>
         <Material color={paintColor} />
       </RoundedBox>
-      <RoundedBox args={[0.15, 0.22, 0.48]} radius={0.04} smoothness={4} position={[-3.08, 0.55, 0.55]}>
-        <Material color="#991b1b" />
+      
+      {/* Taillights - modern LED strip style */}
+      <RoundedBox args={[0.16, 0.22, 0.48]} radius={0.03} smoothness={4} position={[-3.18, 0.55, 0.55]}>
+        <Material color="#dc2626" />
       </RoundedBox>
-      <RoundedBox args={[0.15, 0.22, 0.48]} radius={0.04} smoothness={4} position={[-3.08, 0.55, -0.55]}>
-        <Material color="#991b1b" />
+      <RoundedBox args={[0.16, 0.22, 0.48]} radius={0.03} smoothness={4} position={[-3.18, 0.55, -0.55]}>
+        <Material color="#dc2626" />
       </RoundedBox>
-      <Box args={[0.58, 0.32, 0.64]} position={[1.75, 0.48, 0]}>
+      
+      {/* Engine bay components */}
+      <Box args={[0.62, 0.32, 0.64]} position={[1.75, 0.48, 0]}>
         <Material color="#a16207" highlighted={hoodHighlighted} />
       </Box>
-      <Box args={[0.34, 0.26, 0.42]} position={[1.26, 0.54, -0.46]}>
+      <Box args={[0.36, 0.26, 0.42]} position={[1.26, 0.54, -0.46]}>
         <Material color="#1f2937" highlighted={batteryHighlighted} />
       </Box>
+      
+      {/* Side mirrors */}
+      <RoundedBox args={[0.25, 0.15, 0.35]} radius={0.04} smoothness={4} position={[0.85, 1.1, 0.96]}>
+        <Material color={paintColor} />
+      </RoundedBox>
+      <RoundedBox args={[0.25, 0.15, 0.35]} radius={0.04} smoothness={4} position={[0.85, 1.1, -0.96]}>
+        <Material color={paintColor} />
+      </RoundedBox>
+      
+      {/* Door handles */}
+      <RoundedBox args={[0.18, 0.08, 0.25]} radius={0.02} smoothness={3} position={[0.3, 0.85, 0.95]}>
+        <Material color={trimColor} metalness={0.6} roughness={0.3} />
+      </RoundedBox>
+      <RoundedBox args={[0.18, 0.08, 0.25]} radius={0.02} smoothness={3} position={[0.3, 0.85, -0.95]}>
+        <Material color={trimColor} metalness={0.6} roughness={0.3} />
+      </RoundedBox>
     </group>
   );
 }
@@ -152,7 +191,7 @@ function CarViewer({ highlightedPart, onSystemSelect }) {
         </Canvas>
       </div>
       <div className="rounded-lg border border-neutral-800 bg-diagnostic-surface p-3 text-xs text-diagnostic-muted">
-        1997 Honda Accord-inspired sedan view: open the hood to inspect engine-bay parts like the battery.
+        2021 Honda Accord-inspired sedan view: open the hood to inspect engine-bay parts like the battery.
       </div>
       <button
         type="button"

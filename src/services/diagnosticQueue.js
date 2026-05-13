@@ -1,13 +1,18 @@
-import apiService from './apiService';
 import { enrichDiagnosisWithRepairPricing } from './repairPricingService';
-import commonProblemsService from './commonProblemsService';
+import diagnosticEngine from './diagnosticEngine';
+import { getPreviousDiagnoses } from './diagnosticStorage';
 
 const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
-export const createDiagnosticJob = (vehicle, problem) => ({
+export const createDiagnosticJob = (vehicle, problem = null) => ({
   id: `job-${Date.now()}`,
   vehicle,
-  problem,
+  problem: problem || {
+    name: 'User-reported symptoms',
+    description: vehicle.symptoms,
+    system: 'General',
+    severity: vehicle.severity
+  },
   status: 'queued',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
@@ -21,22 +26,23 @@ export const processDiagnosticJob = async (job, onStatusChange = () => {}) => {
   onStatusChange(processingJob);
 
   try {
-    // Get common problems for this vehicle
-    const commonProblems = await commonProblemsService.getCommonProblems(
-      job.vehicle.make, 
-      job.vehicle.model, 
-      job.vehicle.year
+    // Get previous diagnoses for context
+    const previousHistory = getPreviousDiagnoses(job.vehicle, job.vehicle.symptoms);
+    
+    // Use the new diagnostic engine
+    const diagnosis = await diagnosticEngine.diagnoseVehicle(
+      job.vehicle,
+      job.problem.description || job.vehicle.symptoms || '',
+      job.vehicle.obdCode,
+      previousHistory
     );
     
-    const aiDiagnosis = await apiService.diagnoseCarProblem(job.vehicle, job.problem, commonProblems);
-    const diagnosis = await enrichDiagnosisWithRepairPricing(job.vehicle, job.problem, aiDiagnosis);
-    
-    // Add common problems data to the diagnosis
-    diagnosis.commonProblems = commonProblems;
+    // Enrich with repair pricing
+    const enrichedDiagnosis = await enrichDiagnosisWithRepairPricing(job.vehicle, job.problem, diagnosis);
     
     const completedJob = {
       ...processingJob,
-      diagnosis,
+      diagnosis: enrichedDiagnosis,
       status: 'completed',
       updatedAt: new Date().toISOString()
     };
