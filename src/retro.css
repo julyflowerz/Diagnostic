@@ -47,15 +47,15 @@ body {
 /* Retro Navbar */
 .retro-navbar {
   background-color: var(--retro-medium-bg);
-  border-bottom: 2px solid var(--retro-green);
-  padding: 1rem;
+  border-bottom: 2px solid var(--retro-border);
+  padding: 0;
   position: relative;
 }
 
 .logo-text {
-  color: var(--retro-green);
+  color: var(--retro-amber);
   font-size: 1.2rem;
-  text-shadow: 0 0 10px var(--retro-green);
+  text-shadow: 0 0 10px var(--retro-amber);
   font-weight: bold;
 }
 
@@ -76,16 +76,50 @@ body {
 
 /* Hero Section */
 .main-title {
-  color: var(--retro-green);
+  color: var(--retro-amber);
   font-size: 2rem;
-  text-shadow: 0 0 20px var(--retro-green);
+  text-shadow: 0 0 10px var(--retro-amber);
   margin-bottom: 1rem;
-  animation: glow 2s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
-  from { text-shadow: 0 0 20px var(--retro-green); }
-  to { text-shadow: 0 0 30px var(--retro-green), 0 0 40px var(--retro-green); }
+/* Navbar Tabs */
+.retro-nav-tabs {
+  display: flex;
+  background-color: var(--retro-dark-bg);
+  border-bottom: 2px solid var(--retro-border);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.retro-nav-tab {
+  background-color: transparent;
+  border: none;
+  color: var(--retro-dim-text);
+  font-family: var(--pixel-font);
+  font-size: 0.8rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.retro-nav-tab:hover {
+  color: var(--retro-amber);
+  background-color: var(--retro-medium-bg);
+}
+
+.retro-nav-tab.active {
+  color: var(--retro-amber);
+  background-color: var(--retro-medium-bg);
+  border-bottom: 2px solid var(--retro-amber);
+}
+
+.retro-nav-tab:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--retro-amber);
 }
 
 .subtitle {
@@ -98,9 +132,393 @@ body {
 .retro-window {
   background-color: var(--retro-medium-bg);
   border: 2px solid var(--retro-border);
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 176, 0, 0.3);
   max-width: 1400px;
   margin: 0 auto;
+}
+
+/* Retro Cards */
+.retro-card {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-green);
+  margin-bottom: 1.5rem;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-card:last-child {
+  margin-bottom: 0;
+}
+
+.retro-card-header {
+  background-color: var(--retro-medium-bg);
+  border-bottom: 2px solid var(--retro-green);
+  padding: 1rem;
+}
+
+.retro-card-title {
+  color: var(--retro-text);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.retro-card-subtitle {
+  color: var(--retro-dim-text);
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.retro-card-body {
+  padding: 1.5rem;
+}
+
+.retro-details {
+  margin-bottom: 1.5rem;
+}
+
+.retro-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.retro-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.retro-label {
+  color: var(--retro-amber);
+  font-size: 0.7rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.retro-value {
+  color: var(--retro-text);
+  font-size: 0.7rem;
+  text-align: right;
+  flex: 1;
+  word-wrap: break-word;
+  line-height: 1.3;
+}
+
+.diagnosis-text {
+  text-align: left !important;
+  line-height: 1.4;
+}
+
+.symptoms-text {
+  text-align: left !important;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.cost-text {
+  color: var(--retro-amber) !important;
+  font-weight: bold;
+}
+
+.retro-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.retro-button-primary {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-amber);
+  color: var(--retro-amber);
+}
+
+.retro-button-primary:hover {
+  background-color: var(--retro-amber);
+  color: var(--retro-dark-bg);
+}
+
+.retro-button-danger {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-red);
+  color: var(--retro-red);
+}
+
+.retro-button-danger:hover {
+  background-color: var(--retro-red);
+  color: var(--retro-text);
+}
+
+/* Grid Layouts */
+.garage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .history-grid {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .garage-grid {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+  
+  .history-grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  }
+}
+
+/* Empty State */
+.retro-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.retro-empty-text {
+  color: var(--retro-amber);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.retro-empty-sub {
+  color: var(--retro-dim-text);
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* History Actions */
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+/* Retro Tags */
+.retro-tag {
+  display: inline-block;
+  background-color: var(--retro-medium-bg);
+  border: 1px solid var(--retro-amber);
+  color: var(--retro-amber);
+  font-size: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cost Estimate Grid */
+.cost-estimate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.cost-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: var(--retro-medium-bg);
+  border: 1px solid var(--retro-border);
+  border-radius: 4px;
+}
+
+.cost-label {
+  color: var(--retro-amber);
+  font-size: 0.6rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.cost-value {
+  color: var(--retro-text);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Confidence Bar */
+.retro-confidence-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--retro-medium-bg);
+  border: 1px solid var(--retro-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.retro-confidence-fill {
+  height: 100%;
+  background-color: var(--retro-amber);
+  transition: width 0.3s ease;
+}
+
+.confidence-text {
+  color: var(--retro-amber);
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Part Links */
+.part-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.links-label {
+  color: var(--retro-amber);
+  font-size: 0.6rem;
+  font-weight: bold;
+  margin-right: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* Part Items */
+.retro-part-item {
+  background-color: var(--retro-medium-bg);
+  border: 1px solid var(--retro-border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.part-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.part-costs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cost-badge {
+  font-size: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+.cost-badge.diy {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-green);
+  color: var(--retro-green);
+}
+
+.cost-badge.pro {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-amber);
+  color: var(--retro-amber);
+}
+
+.difficulty-badge {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-text);
+  color: var(--retro-text);
+  font-size: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+.part-recommendation {
+  color: var(--retro-dim-text);
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-top: 0.5rem;
+  line-height: 1.3;
+}
+
+.link-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.part-name {
+  color: var(--retro-amber);
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.part-details {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.part-cost {
+  color: var(--retro-text);
+  font-size: 0.7rem;
+  background-color: var(--retro-dark-bg);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--retro-border);
+  border-radius: 2px;
+}
+
+.part-difficulty {
+  color: var(--retro-amber);
+  font-size: 0.7rem;
+  background-color: var(--retro-dark-bg);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--retro-amber);
+  border-radius: 2px;
+}
+
+.part-description {
+  color: var(--retro-dim-text);
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-top: 0.5rem;
+  line-height: 1.3;
+}
+
+/* Disclaimer */
+.retro-disclaimer {
+  background-color: var(--retro-medium-bg);
+  border: 1px solid var(--retro-amber);
+  padding: 1rem;
+  margin-top: 1rem;
+  font-size: 0.6rem;
+  color: var(--retro-dim-text);
+  line-height: 1.4;
+  border-radius: 4px;
+}
+
+.retro-disclaimer strong {
+  color: var(--retro-amber);
 }
 
 .window-top {
@@ -110,7 +528,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--retro-green);
+  color: var(--retro-amber);
   font-size: 0.8rem;
 }
 
@@ -198,8 +616,8 @@ body {
 
 .retro-input:focus {
   outline: none;
-  border-color: var(--retro-green);
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  border-color: var(--retro-amber);
+  box-shadow: 0 0 10px rgba(255, 176, 0, 0.3);
 }
 
 .retro-input::placeholder {
@@ -216,8 +634,8 @@ body {
 /* Retro Buttons */
 .retro-button {
   background-color: var(--retro-dark-bg);
-  border: 2px solid var(--retro-green);
-  color: var(--retro-green);
+  border: 2px solid var(--retro-amber);
+  color: var(--retro-amber);
   font-family: var(--pixel-font);
   font-size: 0.8rem;
   padding: 0.8rem 1.5rem;
@@ -229,11 +647,11 @@ body {
 }
 
 .retro-button:hover {
-  background-color: var(--retro-green);
+  background-color: var(--retro-amber);
   color: var(--retro-dark-bg);
   text-shadow: none;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(255, 176, 0, 0.3);
 }
 
 .retro-button.secondary {
@@ -292,11 +710,11 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--retro-border);
-  border: 1px solid var(--retro-green);
+  border: 1px solid var(--retro-amber);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--retro-green);
+  background: var(--retro-amber);
 }
 
 /* Responsive adjustments */

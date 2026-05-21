@@ -3,14 +3,13 @@ import './retro.css';
 import RetroCarViewer3D from './components/RetroCarViewer3D';
 import RetroDiagnosticForm from './components/RetroDiagnosticForm';
 import RetroResults from './components/RetroResults';
-import RetroSidebar from './components/RetroSidebar';
 import MechanicFinder from './components/MechanicFinder';
-import ManualLookup from './components/ManualLookup';
-import PartsCostEstimate from './components/PartsCostEstimate';
-import EnhancedResults from './components/EnhancedResults';
-import { getDiagnosticHistory, saveDiagnosticResult, deleteDiagnosticResult } from './services/diagnosticStorage';
+import RetroGarage from './components/RetroGarage';
+import RetroHistory from './components/RetroHistory';
+import { getDiagnosticHistory, saveDiagnosticResult, deleteDiagnosticResult, clearDiagnosticHistory } from './services/diagnosticStorage';
 import { createDiagnosticJob, processDiagnosticJob } from './services/diagnosticQueue';
 import { getEnhancedPartsRecommendations, validateVehicle, getVehicleTypeParts } from './services/vehicleApi';
+
 
 // Diagnostic repair database
 const diagnosticRepairMap = {
@@ -420,43 +419,418 @@ function getPartSearchLinks(year, make, model, partName) {
 function analyzeSymptoms(symptoms, selectedParts) {
   const symptomsLower = symptoms.toLowerCase();
   
-  // Steering issues
-  if ((symptomsLower.includes('shake') || symptomsLower.includes('vibrat')) && 
-      (symptomsLower.includes('steering') || symptomsLower.includes('pull'))) {
-    return diagnosticRepairMap.STEERING_SHAKE_PULL;
+  // Steering and wheel issues - specific to your example
+  if (symptomsLower.includes('steering') && (symptomsLower.includes('shake') || symptomsLower.includes('vibrat') || symptomsLower.includes('shakes'))) {
+    return {
+      title: "Steering Wheel Vibration and Pull",
+      categories: ["steering", "suspension", "wheels"],
+      likelyParts: [
+        {
+          name: "Wheel Balance",
+          diyCost: "$20-$60",
+          mechanicCost: "$40-$120",
+          difficulty: "Easy",
+          description: "Balance weights may have fallen off or become imbalanced"
+        },
+        {
+          name: "Wheel Alignment",
+          diyCost: "$80-$150 (DIY kit)",
+          mechanicCost: "$100-$200",
+          difficulty: "Medium",
+          description: "Front-end alignment needed due to wear or impact"
+        },
+        {
+          name: "Tire Replacement",
+          diyCost: "$400-$800",
+          mechanicCost: "$450-$900",
+          difficulty: "Medium",
+          description: "Uneven tire wear or damaged tire causing vibration"
+        },
+        {
+          name: "Tie Rod End",
+          diyCost: "$60-$120",
+          mechanicCost: "$150-$300",
+          difficulty: "Hard",
+          description: "Worn tie rod end affecting steering control"
+        },
+        {
+          name: "Ball Joint",
+          diyCost: "$80-$160",
+          mechanicCost: "$200-$400",
+          difficulty: "Hard",
+          description: "Worn ball joint causing suspension issues"
+        }
+      ],
+      diagnosis: "Steering wheel vibration and pulling to one side indicates wheel balance, alignment, or suspension component issues. Common causes include improper wheel balance, misaligned front end, worn tie rods, or damaged ball joints.",
+      severity: "medium",
+      estimatedLaborHours: "1-3 hours",
+      confidence: 85
+    };
   }
   
   // Rough idle/misfire
   if ((symptomsLower.includes('rough') || symptomsLower.includes('unstable')) && 
       (symptomsLower.includes('idle') || symptomsLower.includes('misfire'))) {
-    return diagnosticRepairMap.ROUGH_IDLE_MISFIRE;
+    return {
+      title: "Engine Rough Idle or Misfire",
+      categories: ["engine", "ignition", "fuel"],
+      likelyParts: [
+        {
+          name: "Spark Plugs",
+          diyCost: "$20-$60",
+          mechanicCost: "$80-$150",
+          difficulty: "Easy",
+          description: "Worn or fouled spark plugs causing misfire"
+        }
+      ],
+      diagnosis: "Engine rough idle indicates ignition or fuel system issues.",
+      severity: "medium",
+      estimatedLaborHours: "1-2 hours",
+      confidence: 80
+    };
   }
   
   // Overheating
   if (symptomsLower.includes('overheat') || symptomsLower.includes('hot') || 
       symptomsLower.includes('temperature') || symptomsLower.includes('cooling')) {
-    return diagnosticRepairMap.OVERHEATING;
+    return {
+      title: "Engine Overheating",
+      categories: ["cooling", "engine"],
+      likelyParts: [
+        {
+          name: "Thermostat",
+          diyCost: "$15-$40",
+          mechanicCost: "$80-$150",
+          difficulty: "Easy",
+          description: "Stuck thermostat causing overheating"
+        }
+      ],
+      diagnosis: "Engine overheating indicates cooling system failure.",
+      severity: "high",
+      estimatedLaborHours: "1-2 hours",
+      confidence: 85
+    };
   }
   
   // Poor MPG/fuel smell
   if ((symptomsLower.includes('mpg') || symptomsLower.includes('fuel economy') || 
        symptomsLower.includes('gas mileage')) || symptomsLower.includes('fuel smell')) {
-    return diagnosticRepairMap.POOR_MPG_FUEL_SMELL;
+    return {
+      title: "Poor Fuel Economy or Fuel Smell",
+      categories: ["fuel", "engine", "emissions"],
+      likelyParts: [
+        {
+          name: "Oxygen Sensor",
+          diyCost: "$35-$120",
+          mechanicCost: "$150-$350",
+          difficulty: "Easy",
+          description: "Faulty O2 sensor affecting fuel mixture"
+        }
+      ],
+      diagnosis: "Poor fuel economy indicates fuel system or sensor issues.",
+      severity: "low",
+      estimatedLaborHours: "1 hour",
+      confidence: 75
+    };
   }
   
   // Brake noise
   if (symptomsLower.includes('squeal') || symptomsLower.includes('grind') || 
       symptomsLower.includes('brake')) {
-    return diagnosticRepairMap.BRAKE_NOISE;
+    return {
+      title: "Brake System Noise",
+      categories: ["brakes", "safety"],
+      likelyParts: [
+        {
+          name: "Brake Pads",
+          diyCost: "$30-$80",
+          mechanicCost: "$100-$250",
+          difficulty: "Medium",
+          description: "Worn brake pads causing noise"
+        }
+      ],
+      diagnosis: "Brake noise indicates worn brake components.",
+      severity: "high",
+      estimatedLaborHours: "1-2 hours",
+      confidence: 90
+    };
   }
   
   return null;
 };
 
+// Generate diagnostic result with proper structure
+function generateDiagnosticResult(carInfo, code, symptoms, severity, recentRepairs) {
+  const symptomsLower = symptoms.toLowerCase();
+  let diagnosis = '';
+  let affectedSystems = [];
+  let likelyRepairs = [];
+  let totalDiyEstimate = '';
+  let totalMechanicEstimate = '';
+  let nextSteps = [];
+
+  // OBD-II Code matching
+  if (code !== 'NONE') {
+    switch (code) {
+      case 'P0137':
+        diagnosis = 'Downstream oxygen sensor circuit low voltage detected. This can cause poor fuel economy and failed emissions tests.';
+        affectedSystems = ['engine', 'emissions', 'sensors'];
+        likelyRepairs = [
+          {
+            part: 'Downstream Oxygen Sensor',
+            diyCost: '$35-$160',
+            mechanicCost: '$150-$400',
+            difficulty: 'Medium',
+            recommendation: 'Replace downstream O2 sensor and check for exhaust leaks.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} oxygen sensor`
+          },
+          {
+            part: 'O2 Sensor Wiring',
+            diyCost: '$10-$50',
+            mechanicCost: '$50-$150',
+            difficulty: 'Easy',
+            recommendation: 'Inspect and repair damaged O2 sensor wiring and connectors.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} oxygen sensor wiring`
+          }
+        ];
+        totalDiyEstimate = '$45-$210';
+        totalMechanicEstimate = '$200-$550';
+        nextSteps = ['Check for exhaust leaks', 'Test upstream O2 sensor', 'Clear codes and test drive'];
+        break;
+
+      case 'P0420':
+        diagnosis = 'Catalyst system efficiency below threshold. Common cause is failed catalytic converter or oxygen sensor issues.';
+        affectedSystems = ['engine', 'emissions', 'exhaust'];
+        likelyRepairs = [
+          {
+            part: 'Catalytic Converter',
+            diyCost: '$150-$900',
+            mechanicCost: '$600-$2500',
+            difficulty: 'Hard',
+            recommendation: 'Replace catalytic converter if confirmed failed.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} catalytic converter`
+          },
+          {
+            part: 'Oxygen Sensors',
+            diyCost: '$70-$320',
+            mechanicCost: '$200-$600',
+            difficulty: 'Medium',
+            recommendation: 'Test and replace faulty oxygen sensors first.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} oxygen sensors`
+          },
+          {
+            part: 'Exhaust Leak Inspection',
+            diyCost: '$0',
+            mechanicCost: '$50-$200',
+            difficulty: 'Easy',
+            recommendation: 'Check for exhaust leaks before replacing converter.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} exhaust leak`
+          }
+        ];
+        totalDiyEstimate = '$220-$1220';
+        totalMechanicEstimate = '$850-$3300';
+        nextSteps = ['Check for exhaust leaks', 'Test O2 sensors', 'Replace catalytic converter if needed'];
+        break;
+
+      case 'P0300':
+        diagnosis = 'Random/multiple cylinder misfire detected. This can cause rough running, poor fuel economy, and damage to catalytic converter.';
+        affectedSystems = ['engine', 'ignition', 'fuel'];
+        likelyRepairs = [
+          {
+            part: 'Spark Plugs',
+            diyCost: '$20-$100',
+            mechanicCost: '$80-$200',
+            difficulty: 'Easy',
+            recommendation: 'Replace spark plugs and inspect ignition wires.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} spark plugs`
+          },
+          {
+            part: 'Ignition Coils/Wires',
+            diyCost: '$100-$300',
+            mechanicCost: '$200-$600',
+            difficulty: 'Hard',
+            recommendation: 'Test and replace failing ignition coils or wires.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} ignition coils`
+          },
+          {
+            part: 'Fuel Injector/Vacuum Leak',
+            diyCost: '$20-$200',
+            mechanicCost: '$100-$400',
+            difficulty: 'Medium',
+            recommendation: 'Check for vacuum leaks and clean fuel injectors.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} fuel injectors`
+          }
+        ];
+        totalDiyEstimate = '$140-$600';
+        totalMechanicEstimate = '$380-$1200';
+        nextSteps = ['Check for vacuum leaks', 'Replace spark plugs', 'Test ignition system'];
+        break;
+
+      case 'P0171':
+        diagnosis = 'System too lean (Bank 1). Engine is getting too much air or not enough fuel, causing poor performance.';
+        affectedSystems = ['engine', 'fuel', 'air intake'];
+        likelyRepairs = [
+          {
+            part: 'Vacuum Leak Repair',
+            diyCost: '$10-$100',
+            mechanicCost: '$50-$250',
+            difficulty: 'Easy',
+            recommendation: 'Inspect and repair vacuum hoses and intake gaskets.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} vacuum leak`
+          },
+          {
+            part: 'MAF Sensor',
+            diyCost: '$50-$150',
+            mechanicCost: '$100-$300',
+            difficulty: 'Easy',
+            recommendation: 'Clean or replace mass air flow sensor.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} mass air flow sensor`
+          },
+          {
+            part: 'Fuel Delivery Inspection',
+            diyCost: '$0',
+            mechanicCost: '$100-$400',
+            difficulty: 'Medium',
+            recommendation: 'Check fuel pressure and filter.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} fuel filter`
+          }
+        ];
+        totalDiyEstimate = '$60-$250';
+        totalMechanicEstimate = '$250-$950';
+        nextSteps = ['Check for vacuum leaks', 'Clean MAF sensor', 'Check fuel pressure'];
+        break;
+
+      case 'P0455':
+        diagnosis = 'EVAP system large leak detected. Usually caused by loose gas cap or EVAP system component failure.';
+        affectedSystems = ['engine', 'emissions', 'fuel'];
+        likelyRepairs = [
+          {
+            part: 'Gas Cap',
+            diyCost: '$15-$50',
+            mechanicCost: '$20-$80',
+            difficulty: 'Easy',
+            recommendation: 'Tighten or replace gas cap first.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} gas cap`
+          },
+          {
+            part: 'EVAP Purge Valve',
+            diyCost: '$30-$100',
+            mechanicCost: '$100-$250',
+            difficulty: 'Medium',
+            recommendation: 'Test and replace EVAP purge valve if needed.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} evap purge valve`
+          },
+          {
+            part: 'EVAP Hose Leak',
+            diyCost: '$10-$80',
+            mechanicCost: '$50-$200',
+            difficulty: 'Easy',
+            recommendation: 'Inspect and repair cracked EVAP hoses.',
+            searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} evap hoses`
+          }
+        ];
+        totalDiyEstimate = '$55-$230';
+        totalMechanicEstimate = '$170-$530';
+        nextSteps = ['Check/tighten gas cap', 'Inspect EVAP hoses', 'Test purge valve'];
+        break;
+    }
+  }
+
+  // Symptom-based matching for steering/wheel issues
+  if (symptomsLower.includes('steering') && (symptomsLower.includes('shake') || symptomsLower.includes('vibrat') || symptomsLower.includes('shakes') || symptomsLower.includes('high speed'))) {
+    diagnosis = `Analysis of symptoms: ${symptoms}. Steering wheel vibration and pulling to one side indicates wheel balance, alignment, or suspension component issues. Common causes include improper wheel balance, misaligned front end, worn tie rods, or damaged ball joints.`;
+    affectedSystems = ['wheels', 'steering', 'suspension'];
+    likelyRepairs = [
+      {
+        part: 'Wheel Balance',
+        diyCost: '$0 - shop required',
+        mechanicCost: '$40 - $100',
+        difficulty: 'Shop service',
+        recommendation: 'Start with a wheel balance if shaking happens at highway speeds.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} wheel balance`
+      },
+      {
+        part: 'Wheel Alignment',
+        diyCost: '$0 - shop required',
+        mechanicCost: '$80 - $200',
+        difficulty: 'Shop service',
+        recommendation: 'Get alignment checked if vehicle pulls to one side.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} wheel alignment`
+      },
+      {
+        part: 'Tire Inspection/Replacement',
+        diyCost: '$400-$800',
+        mechanicCost: '$450-$900',
+        difficulty: 'Medium',
+        recommendation: 'Inspect tires for uneven wear and damage.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} tires`
+      },
+      {
+        part: 'Tie Rod End Inspection',
+        diyCost: '$60-$120',
+        mechanicCost: '$150-$300',
+        difficulty: 'Hard',
+        recommendation: 'Check tie rod ends for wear and play.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} tie rod end`
+      },
+      {
+        part: 'Ball Joint Inspection',
+        diyCost: '$80-$160',
+        mechanicCost: '$200-$400',
+        difficulty: 'Hard',
+        recommendation: 'Inspect ball joints for wear and damage.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} ball joint`
+      }
+    ];
+    totalDiyEstimate = '$540-$1080';
+    totalMechanicEstimate = '$920-$1900';
+    nextSteps = [
+      'Check tire pressure',
+      'Inspect tire wear',
+      'Get wheels balanced',
+      'Get alignment checked',
+      'Inspect tie rods, ball joints, and wheel bearings'
+    ];
+  }
+
+  // Default case for other symptoms
+  if (!diagnosis && symptoms) {
+    diagnosis = `Analysis of symptoms: ${symptoms}. General diagnostic recommended for accurate identification of issues.`;
+    affectedSystems = ['general'];
+    likelyRepairs = [
+      {
+        part: 'Diagnostic Service',
+        diyCost: '$0',
+        mechanicCost: '$100-$200',
+        difficulty: 'Easy',
+        recommendation: 'Professional diagnostic service to identify the issue.',
+        searchQuery: `${carInfo.year} ${carInfo.make} ${carInfo.model} diagnostic service`
+      }
+    ];
+    totalDiyEstimate = '$0';
+    totalMechanicEstimate = '$100-$200';
+    nextSteps = ['Professional diagnostic inspection', 'Check for common issues based on symptoms'];
+  }
+
+  return {
+    diagnosis: diagnosis || 'Diagnostic analysis completed.',
+    affectedSystems: affectedSystems,
+    likelyRepairs: likelyRepairs,
+    totalDiyEstimate: totalDiyEstimate || '$0',
+    totalMechanicEstimate: totalMechanicEstimate || '$100-$200',
+    nextSteps: nextSteps,
+    timestamp: new Date().toISOString(),
+    carInfo: carInfo,
+    code: code,
+    symptoms: symptoms,
+    severity: severity
+  };
+}
+
 function App() {
   const [carInfo, setCarInfo] = useState({ year: '', make: '', model: '' });
   const [selectedProblem, setSelectedProblem] = useState(null);
-  const [diagnosticResults, setDiagnosticResults] = useState(null);
+  const [scanResult, setScanResult] = useState(null);
   const [selectedParts, setSelectedParts] = useState([]);
   const [history, setHistory] = useState([]);
   const [garage, setGarage] = useState([]);
@@ -465,6 +839,11 @@ function App() {
   const [savedMessage, setSavedMessage] = useState('');
   const [activeSection, setActiveSection] = useState('scan');
   const [vehicleValidation, setVehicleValidation] = useState(null);
+  const [queueStatus, setQueueStatus] = useState('WAITING');
+
+  useEffect(() => {
+    setHistory(getDiagnosticHistory());
+  }, []);
 
   // New form states for retro design
   const [code, setCode] = useState('NONE');
@@ -532,93 +911,57 @@ function App() {
   }, [carInfo.make, carInfo.model, carInfo.year]);
 
   const handleDiagnostic = async () => {
+    console.log("Run scan clicked");
+    console.log("form data:", carInfo);
+    console.log("symptoms:", symptoms);
+    console.log("code:", code);
+    console.log("severity:", severity);
+    
     setError('');
     setSavedMessage('');
-    setDiagnosticResults(null);
+    setScanResult(null);
     setQueueStatus('PROCESSING');
 
-    // Get diagnostic data based on priority: OBD code > symptoms > categories
-    let diagnosticData = null;
-    
-    // First try enhanced OBD code matching with vehicle-specific data
-    if (code !== 'NONE') {
-      // Try vehicle-specific recommendations first
-      const enhancedData = getEnhancedPartsRecommendations(carInfo.make, carInfo.model, carInfo.year, code);
-      if (enhancedData) {
-        diagnosticData = enhancedData;
-      } else {
-        // Fallback to generic diagnostic repair map
-        diagnosticData = diagnosticRepairMap[code];
-      }
-    }
-    
-    // Then try symptom analysis
-    else if (symptoms) {
-      diagnosticData = analyzeSymptoms(symptoms, selectedParts);
-    }
-    
-    // If still no match, try category-based logic with vehicle info
-    if (!diagnosticData && selectedParts.length > 0) {
-      const vehicleInfo = getVehicleTypeParts(carInfo.make, carInfo.model);
-      const categoryTitle = selectedParts.map(part => 
-        part.charAt(0).toUpperCase() + part.slice(1).replace('_', ' ')
-      ).join(' / ');
-      
-      diagnosticData = {
-        title: `${categoryTitle} Issues`,
-        categories: selectedParts,
-        likelyParts: [
-          {
-            name: "General Inspection",
-            diyCost: "$0-$50",
-            mechanicCost: "$100-$300",
-            laborHours: "1.0-2.0",
-            difficulty: "Varies",
-            explanation: `Professional inspection recommended for accurate diagnosis of multiple system issues on your ${carInfo.year} ${carInfo.make} ${carInfo.model}.`,
-            vehicleSpecific: `Common parts for this vehicle: ${vehicleInfo.commonParts.join(', ')}`
-          }
-        ]
-      };
+    // Validate required fields
+    if (!carInfo.year || !carInfo.make || !carInfo.model) {
+      setError('Please enter vehicle information (Year, Make, Model)');
+      setQueueStatus('WAITING');
+      return;
     }
 
-    // Create enhanced problem data with repair information
-    const problemData = {
-      id: `diag_${Date.now()}`,
-      code: code,
-      severity: severity,
-      symptoms: symptoms,
-      recentRepairs: recentRepairs,
-      system: diagnosticData?.title || 'User Selection',
-      description: diagnosticData?.title || `User reported: ${symptoms}`,
-      affectedParts: diagnosticData?.categories || selectedParts,
-      likelyRepairs: diagnosticData?.likelyParts || [],
-      estimatedCost: diagnosticData?.likelyParts?.[0]?.mechanicCost || '$100-1500',
-      timestamp: new Date().toISOString(),
-      carInfo: carInfo,
-      vehicleValidated: true
-    };
+    if (!symptoms && code === 'NONE') {
+      setError('Please enter symptoms or select an OBD-II code');
+      setQueueStatus('WAITING');
+      return;
+    }
 
-    setSelectedProblem(problemData);
+    // Generate proper scan result structure
+    const result = generateDiagnosticResult(carInfo, code, symptoms, severity, recentRepairs);
+    
+    console.log("Generated scan result:", result);
 
     // Simulate processing time for better UX
-    setQueueStatus('PROCESSING');
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Set the enhanced diagnostic results
-    setDiagnosticResults(problemData);
-    setSelectedParts(problemData.affectedParts || []);
+    // Set the scan result
+    console.log("Setting scanResult to state:", result);
+    setScanResult(result);
+    setSelectedParts(result.affectedSystems || []);
     setQueueStatus('COMPLETE');
+    
+    setSavedMessage('Diagnostic complete! Review the results below.');
+    console.log("Scan result set to state:", result);
   };
 
   const handleSaveResult = () => {
-    if (!diagnosticResults) return;
+    if (!scanResult) return;
 
     const record = saveDiagnosticResult({
       id: `diag_${Date.now()}`,
       vehicle: carInfo,
       code: code,
       symptoms: symptoms,
-      diagnosis: diagnosticResults,
+      diagnosis: scanResult,
       status: 'completed',
       timestamp: new Date().toISOString()
     });
@@ -647,8 +990,8 @@ function App() {
     // Restore diagnostic information
     setCode(savedDiagnostic.code || 'NONE');
     setSymptoms(savedDiagnostic.symptoms || '');
-    setDiagnosticResults(savedDiagnostic.diagnosis);
-    setSelectedParts(savedDiagnostic.diagnosis?.affectedParts || []);
+    setScanResult(savedDiagnostic.diagnosis);
+    setSelectedParts(savedDiagnostic.diagnosis?.affectedSystems || []);
     setQueueStatus('COMPLETE');
     
     // Switch to scan section
@@ -662,6 +1005,22 @@ function App() {
       deleteDiagnosticResult(id);
       setHistory(getDiagnosticHistory());
       setSavedMessage('Diagnostic history deleted');
+    }
+  };
+
+  const handleDeleteHistory = (id) => {
+    if (window.confirm('Are you sure you want to delete this diagnostic history?')) {
+      deleteDiagnosticResult(id);
+      setHistory(getDiagnosticHistory());
+      setSavedMessage('Diagnostic history deleted');
+    }
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm('Are you sure you want to clear all diagnostic history?')) {
+      clearDiagnosticHistory();
+      setHistory([]);
+      setSavedMessage('All diagnostic history cleared');
     }
   };
 
@@ -696,7 +1055,7 @@ function App() {
     setRecentRepairs('');
     setTrim('');
     setMileage('');
-    setDiagnosticResults(null);
+    setScanResult(null);
     setSelectedParts([]);
     setQueueStatus('WAITING');
     setError('');
@@ -709,34 +1068,54 @@ function App() {
   return (
     <div className="retro-body">
       <nav className="retro-navbar">
-        <div className="container-fluid d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center">
-            <div className="retro-logo me-3">🚗</div>
-            <div>
-              <h1 className="retro-title mb-0">RETRO CAR DIAGNOSTIC</h1>
-              <div className="retro-subtitle">Advanced Diagnostic System v2.0</div>
+        <div className="container-fluid">
+          <div className="row align-items-center">
+            <div className="col-auto">
+              <div className="d-flex align-items-center">
+                <div className="retro-logo me-3">🚗</div>
+                <div>
+                  <h1 className="retro-title mb-0">RETRO CAR DIAGNOSTIC</h1>
+                  <div className="retro-subtitle">Advanced Diagnostic System v2.0</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="d-flex gap-2">
-            <button 
-              className={`retro-nav-btn ${activeSection === 'scan' ? 'active' : ''}`}
-              onClick={() => setActiveSection('scan')}
-            >
-              SCAN
-            </button>
-            <button 
-              className={`retro-nav-btn ${activeSection === 'garage' ? 'active' : ''}`}
-              onClick={() => setActiveSection('garage')}
-            >
-              GARAGE
-            </button>
-            <button 
-              className={`retro-nav-btn ${activeSection === 'history' ? 'active' : ''}`}
-              onClick={() => setActiveSection('history')}
-            >
-              HISTORY
-            </button>
-          </div>
+          
+          {/* Navigation Tabs */}
+          <ul className="retro-nav-tabs">
+            <li>
+              <button 
+                className={`retro-nav-tab ${activeSection === 'scan' ? 'active' : ''}`}
+                onClick={() => setActiveSection('scan')}
+              >
+                SCAN
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`retro-nav-tab ${activeSection === 'mechanics' ? 'active' : ''}`}
+                onClick={() => setActiveSection('mechanics')}
+              >
+                MECHANICS
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`retro-nav-tab ${activeSection === 'garage' ? 'active' : ''}`}
+                onClick={() => setActiveSection('garage')}
+              >
+                GARAGE
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`retro-nav-tab ${activeSection === 'history' ? 'active' : ''}`}
+                onClick={() => setActiveSection('history')}
+              >
+                HISTORY
+              </button>
+            </li>
+          </ul>
         </div>
       </nav>
 
@@ -762,7 +1141,21 @@ function App() {
 
         {activeSection === 'scan' && (
           <div className="row g-4">
+            <div className="col-12">
+              {/* 3D Vehicle Viewer at the very top */}
+              <div className="retro-window">
+                <div className="window-top">
+                  <span>3D VEHICLE SYSTEM VIEWER</span>
+                  <span>HIGHLIGHTED: {selectedParts.length > 0 ? selectedParts.join(', ').toUpperCase() : 'NONE'}</span>
+                </div>
+                <div className="window-body">
+                  <RetroCarViewer3D selectedParts={selectedParts} onSystemSelect={handleSystemSelect} />
+                </div>
+              </div>
+            </div>
+
             <div className="col-lg-8">
+              {/* Vehicle Info and Diagnostic Form */}
               <div className="retro-window">
                 <div className="window-top">
                   <span>VEHICLE DIAGNOSTIC SCANNER</span>
@@ -790,21 +1183,61 @@ function App() {
                 </div>
               </div>
 
-              <div className="retro-window mt-4">
-                <div className="window-top">
-                  <span>3D VEHICLE SYSTEM VIEWER</span>
-                  <span>HIGHLIGHTED: {selectedParts.length > 0 ? selectedParts.join(', ').toUpperCase() : 'NONE'}</span>
+              {/* Scan Results */}
+              {scanResult && scanResult.likelyRepairs && scanResult.likelyRepairs.length > 0 && (
+                <div className="retro-window mt-4">
+                  <div className="window-top">
+                    <span>SCAN RESULTS</span>
+                    <span>DIAGNOSIS COMPLETE</span>
+                  </div>
+                  <div className="window-body">
+                    <RetroResults result={scanResult} carInfo={carInfo} />
+                  </div>
                 </div>
-                <div className="window-body">
-                  <RetroCarViewer3D selectedParts={selectedParts} onSystemSelect={handleSystemSelect} />
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="col-lg-4">
-              <RetroSidebar 
+              {/* Quick Stats */}
+              <div className="retro-window">
+                <div className="window-top">
+                  <span>DIAGNOSTIC STATS</span>
+                  <span>{history.length} RECORDS</span>
+                </div>
+                <div className="window-body">
+                  <div className="text-center">
+                    <div className="mb-3">
+                      <div className="retro-stat-number">{history.length}</div>
+                      <div className="retro-stat-label">Total Scans</div>
+                    </div>
+                    <div className="mb-3">
+                      <div className="retro-stat-number">{garage.length}</div>
+                      <div className="retro-stat-label">Vehicles</div>
+                    </div>
+                    <div className="mb-3">
+                      <div className="retro-stat-number">{queueStatus === 'PROCESSING' ? 'RUNNING' : 'READY'}</div>
+                      <div className="retro-stat-label">Scanner Status</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'mechanics' && (
+          <div className="row g-4">
+            <div className="col-12">
+              <MechanicFinder />
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'garage' && (
+          <div className="row g-4">
+            <div className="col-12">
+              <RetroGarage 
                 garage={garage} 
-                history={history} 
                 onRestoreDiagnostic={handleRestoreDiagnostic} 
                 onDeleteDiagnostic={handleDeleteDiagnostic} 
               />
@@ -812,18 +1245,17 @@ function App() {
           </div>
         )}
 
-        {/* Additional panels */}
-        <div className="row g-4 mt-1">
-          <div className="col-lg-4">
-            <ManualLookup selectedCode={code} />
+        {activeSection === 'history' && (
+          <div className="row g-4">
+            <div className="col-12">
+              <RetroHistory 
+                history={history} 
+                onDelete={handleDeleteHistory} 
+                onClear={handleClearHistory} 
+              />
+            </div>
           </div>
-          <div className="col-lg-4">
-            <PartsCostEstimate selectedCode={code} />
-          </div>
-          <div className="col-lg-4">
-            <EnhancedResults diagnosticResults={diagnosticResults} carInfo={carInfo} />
-          </div>
-        </div>
+        )}
 
         {/* Info bars - fixed position to prevent stacking */}
         <div className="info-bar-container">
@@ -846,30 +1278,6 @@ function App() {
             </div>
           )}
         </div>
-
-        {activeSection === 'garage' && (
-          <section className="retro-window mx-auto">
-            <div className="window-top">
-              <span>MY GARAGE</span>
-              <span>{garage.length} VEHICLES</span>
-            </div>
-            <div className="window-body">
-              <RetroSidebar garage={garage} history={[]} onRestoreDiagnostic={handleRestoreDiagnostic} onDeleteDiagnostic={handleDeleteDiagnostic} />
-            </div>
-          </section>
-        )}
-
-        {activeSection === 'history' && (
-          <section className="retro-window mx-auto">
-            <div className="window-top">
-              <span>DIAGNOSTIC HISTORY</span>
-              <span>{history.length} RECORDS</span>
-            </div>
-            <div className="window-body">
-              <RetroSidebar garage={[]} history={history} onRestoreDiagnostic={handleRestoreDiagnostic} onDeleteDiagnostic={handleDeleteDiagnostic} />
-            </div>
-          </section>
-        )}
       </main>
 
       <div className="scanlines"></div>
