@@ -1,0 +1,812 @@
+/* Retro Car Diagnostic CSS */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --retro-green: #00ff00;
+  --retro-amber: #ffb000;
+  --retro-red: #ff0000;
+  --retro-dark-bg: #0a0a0a;
+  --retro-medium-bg: #1a1a1a;
+  --retro-light-bg: #2a2a2a;
+  --retro-border: #333333;
+  --retro-text: #ffffff;
+  --retro-dim-text: #cccccc;
+  --pixel-font: 'Press Start 2P', monospace;
+}
+
+body {
+  background-color: var(--retro-dark-bg) !important;
+  color: var(--retro-text) !important;
+  font-family: var(--pixel-font) !important;
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Scanlines effect */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Retro Navbar */
+.retro-navbar {
+  background-color: var(--retro-medium-bg);
+  border-bottom: 2px solid var(--retro-green);
+  padding: 1rem;
+  position: relative;
+}
+
+.logo-text {
+  color: var(--retro-green);
+  font-size: 1.2rem;
+  text-shadow: 0 0 10px var(--retro-green);
+  font-weight: bold;
+}
+
+.retro-link {
+  color: var(--retro-amber);
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--retro-amber);
+  transition: all 0.2s;
+}
+
+.retro-link:hover {
+  background-color: var(--retro-amber);
+  color: var(--retro-dark-bg);
+  text-shadow: none;
+}
+
+/* Hero Section */
+.main-title {
+  color: var(--retro-green);
+  font-size: 2rem;
+  text-shadow: 0 0 20px var(--retro-green);
+  margin-bottom: 1rem;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 20px var(--retro-green); }
+  to { text-shadow: 0 0 30px var(--retro-green), 0 0 40px var(--retro-green); }
+}
+
+.subtitle {
+  color: var(--retro-amber);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+/* Retro Window */
+.retro-window {
+  background-color: var(--retro-medium-bg);
+  border: 2px solid var(--retro-border);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.window-top {
+  background-color: var(--retro-light-bg);
+  border-bottom: 2px solid var(--retro-border);
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--retro-green);
+  font-size: 0.8rem;
+}
+
+.window-body {
+  padding: 2rem;
+}
+
+/* Pixel Cards */
+.pixel-card {
+  background-color: var(--retro-light-bg);
+  border: 2px solid var(--retro-border);
+  padding: 1.5rem;
+  height: 100%;
+  position: relative;
+}
+
+.pixel-card h2 {
+  color: var(--retro-amber);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--retro-amber);
+  padding-bottom: 0.5rem;
+}
+
+/* Car Stage */
+.car-stage {
+  position: relative;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.car-img {
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.problem-highlight {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.3);
+  border: 1px solid var(--retro-red);
+  pointer-events: none;
+  display: none;
+}
+
+.problem-highlight.active {
+  display: block;
+  animation: blink 0.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 0.3; }
+  51%, 100% { opacity: 0.7; }
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--retro-dim-text);
+}
+
+.legend-box {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 0, 0, 0.3);
+  border: 1px solid var(--retro-red);
+}
+
+/* Retro Form Elements */
+.retro-input {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-border);
+  color: var(--retro-text);
+  font-family: var(--pixel-font);
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  transition: all 0.2s;
+}
+
+.retro-input:focus {
+  outline: none;
+  border-color: var(--retro-green);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.retro-input::placeholder {
+  color: var(--retro-dim-text);
+  opacity: 0.7;
+}
+
+.form-label {
+  color: var(--retro-amber);
+  font-size: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Retro Buttons */
+.retro-button {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-green);
+  color: var(--retro-green);
+  font-family: var(--pixel-font);
+  font-size: 0.8rem;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-button:hover {
+  background-color: var(--retro-green);
+  color: var(--retro-dark-bg);
+  text-shadow: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
+}
+
+.retro-button.secondary {
+  border-color: var(--retro-amber);
+  color: var(--retro-amber);
+}
+
+.retro-button.secondary:hover {
+  background-color: var(--retro-amber);
+  color: var(--retro-dark-bg);
+}
+
+.retro-button.danger {
+  border-color: var(--retro-red);
+  color: var(--retro-red);
+}
+
+.retro-button.danger:hover {
+  background-color: var(--retro-red);
+  color: var(--retro-text);
+}
+
+/* Results Panel */
+.results-panel {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-border);
+  padding: 1rem;
+  min-height: 200px;
+  font-size: 0.8rem;
+  color: var(--retro-dim-text);
+}
+
+.small-text {
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+/* Garage and History */
+#garageList, #historyList {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-border);
+  padding: 1rem;
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--retro-dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--retro-border);
+  border: 1px solid var(--retro-green);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--retro-green);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 1.5rem;
+  }
+  
+  .window-body {
+    padding: 1rem;
+  }
+  
+  .pixel-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .retro-button {
+    font-size: 0.7rem;
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* CRT Monitor Effect */
+.retro-window::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 255, 0, 0.1) 0%,
+    rgba(0, 255, 0, 0.05) 40%,
+    rgba(0, 255, 0, 0.02) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Loading animation */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--retro-border);
+  border-top-color: var(--retro-green);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Status indicators */
+.status-waiting { color: var(--retro-amber); }
+.status-processing { color: var(--retro-green); }
+.status-error { color: var(--retro-red); }
+.status-complete { color: var(--retro-green); }
+
+/* Clean Layout Improvements */
+.car-stage-3d {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.retro-system-btn {
+  font-family: var(--pixel-font);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retro-system-btn:hover {
+  border-color: var(--retro-green) !important;
+  background-color: rgba(0, 255, 0, 0.05) !important;
+}
+
+.retro-system-btn.active {
+  border-color: var(--retro-green) !important;
+  background-color: rgba(0, 255, 0, 0.1) !important;
+  color: var(--retro-green) !important;
+}
+
+/* Better spacing and layout */
+.window-body {
+  padding: 1.5rem;
+}
+
+.row.g-4 {
+  margin-bottom: 1rem;
+}
+
+/* Prevent stacking of info bars */
+.info-bar-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.info-bar {
+  background-color: var(--retro-medium-bg);
+  border: 2px solid;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+.info-bar.success {
+  border-color: var(--retro-green);
+  color: var(--retro-green);
+}
+
+.info-bar.error {
+  border-color: var(--retro-red);
+  color: var(--retro-red);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Better responsive design */
+@media (max-width: 768px) {
+  .info-bar-container {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .window-body {
+    padding: 1rem;
+  }
+  
+  .retro-system-btn {
+    font-size: 0.6rem;
+    padding: 0.8rem !important;
+  }
+}
+
+/* Pixelated 3D Canvas */
+.car-stage-3d canvas {
+  image-rendering: pixelated !important;
+  image-rendering: -moz-crisp-edges !important;
+  image-rendering: crisp-edges !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.car-stage-3d {
+  position: relative;
+  transform: scale(1.1);
+}
+
+/* Enhanced pixelated effect */
+.pixelated-3d {
+  filter: contrast(1.2) brightness(1.1);
+}
+
+/* Form section styling */
+.section-title {
+  border-bottom: 2px solid var(--retro-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Dropdown hover states */
+.hover-bg-retro-medium-bg:hover {
+  background-color: var(--retro-medium-bg) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Better form spacing */
+.retro-input:focus {
+  border-color: var(--retro-green) !important;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3) !important;
+  outline: none;
+}
+
+.form-select.retro-input:focus {
+  border-color: var(--retro-green) !important;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3) !important;
+  outline: none;
+}
+
+/* Active navigation state */
+.retro-link.active {
+  color: var(--retro-green) !important;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+}
+
+/* Mechanic finder styles */
+.mechanic-card {
+  background-color: var(--retro-dark-bg);
+  transition: all 0.2s ease;
+}
+
+.mechanic-card:hover {
+  background-color: var(--retro-medium-bg);
+  transform: translateY(-2px);
+}
+
+/* Manual lookup styles */
+.upload-area {
+  background-color: var(--retro-dark-bg);
+  border: 2px dashed var(--retro-border) !important;
+  transition: all 0.2s ease;
+}
+
+.upload-area:hover {
+  border-color: var(--retro-green) !important;
+  background-color: var(--retro-medium-bg);
+}
+
+.uploaded-manual {
+  background-color: var(--retro-dark-bg);
+}
+
+.search-result {
+  background-color: var(--retro-dark-bg);
+  transition: all 0.2s ease;
+}
+
+.search-result:hover {
+  background-color: var(--retro-medium-bg);
+}
+
+/* Parts cost estimate styles */
+.part-card {
+  background-color: var(--retro-dark-bg);
+  transition: all 0.2s ease;
+}
+
+.part-card:hover {
+  background-color: var(--retro-medium-bg);
+  transform: translateY(-1px);
+}
+
+/* Alert styles */
+.retro-alert {
+  background-color: var(--retro-dark-bg);
+  border: 1px solid var(--retro-border);
+  color: var(--retro-dim-text);
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.retro-alert.alert-danger {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.retro-alert.alert-success {
+  border-color: var(--retro-green);
+  color: var(--retro-green);
+}
+
+/* Enhanced category system styles */
+.system-button {
+  background-color: var(--retro-dark-bg);
+  border: 2px solid var(--retro-border);
+  color: var(--retro-dim-text);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.system-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.system-button:hover::before {
+  left: 100%;
+}
+
+.system-button:hover {
+  background-color: var(--retro-medium-bg);
+  border-color: var(--retro-green);
+  color: var(--retro-green);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.system-button.active {
+  background-color: var(--retro-medium-bg);
+  border-color: var(--retro-green);
+  color: var(--retro-green);
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+  }
+}
+
+.system-label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.system-helper {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  display: block;
+}
+
+/* Category grid layout */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.category-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.category-grid::-webkit-scrollbar-track {
+  background: var(--retro-dark-bg);
+  border: 1px solid var(--retro-border);
+}
+
+.category-grid::-webkit-scrollbar-thumb {
+  background: var(--retro-green);
+  border: 1px solid var(--retro-border);
+}
+
+.category-grid::-webkit-scrollbar-thumb:hover {
+  background: #00ff00;
+}
+
+/* JDM/Tuning special categories */
+.jdm-category {
+  border-color: #ff6b35;
+  position: relative;
+}
+
+.jdm-category::after {
+  content: '🏁';
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+.jdm-category:hover {
+  border-color: #ff6b35;
+  color: #ff6b35;
+  text-shadow: 0 0 5px rgba(255, 107, 53, 0.5);
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+}
+
+.jdm-category.active {
+  border-color: #ff6b35;
+  color: #ff6b35;
+  text-shadow: 0 0 8px rgba(255, 107, 53, 0.8);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+/* Retro terminal effects */
+.terminal-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Scanline effect for categories */
+.system-button {
+  position: relative;
+}
+
+.system-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 255, 0, 0.03) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.system-button:hover::after {
+  opacity: 1;
+}
+
+/* Loading animation for diagnostic processing */
+.diagnostic-loading {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--retro-border);
+  border-top-color: var(--retro-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Multi-selection indicators */
+.selected-indicator {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: var(--retro-green);
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
+}
+
+/* Multi-selection counter */
+.selection-counter {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background: var(--retro-green);
+  color: var(--retro-dark-bg);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border: 2px solid var(--retro-dark-bg);
+}
+
+/* Enhanced multi-select button states */
+.system-button.active {
+  position: relative;
+}
+
+.system-button.active::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--retro-green);
+  border-radius: 4px;
+  animation: borderPulse 2s infinite;
+}
+
+@keyframes borderPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

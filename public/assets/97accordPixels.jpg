@@ -1,0 +1,4 @@
+# This is a placeholder file for the pixel car image
+# You should replace this with an actual pixelated 1997 Honda Accord image
+# The image should be saved as 97accordPixels.jpg in the public/assets directory
+# For now, the app will show a broken image, but the functionality will work
